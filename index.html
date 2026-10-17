@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loss Tecnologia - Conectando ao WhatsApp</title>
+<meta name="robots" content="noindex">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:radial-gradient(circle at 50% 35%,#3b1260 0%,#0b0b12 60%);
+       font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#fff;padding:24px;text-align:center}
+  .spin{width:48px;height:48px;margin:0 auto 20px;border-radius:50%;
+        border:4px solid rgba(255,255,255,.15);border-top-color:#25D366;animation:s 0.8s linear infinite}
+  @keyframes s{to{transform:rotate(360deg)}}
+  p{opacity:.8;font-size:16px}
+  a{color:#25D366}
+</style>
+</head>
+<body>
+<div>
+  <div class="spin"></div>
+  <p id="msg">Conectando você a um vendedor…</p>
+</div>
+<script>
+  // Fila de vendedores mantida no Google Apps Script
+  var API = 'https://script.google.com/macros/s/AKfycbzHBVpqOaAFbCObGDVpEq2WwTVgJIpPUp6PhVIZoFlUI71uzG03P2-KTvujO6_XBFHjRQ/exec?api=1';
+
+  // Reserva: se o Google demorar ou falhar, sorteia um vendedor
+  var RESERVA = ['554699272588','554699818009','554691310699','554699708779'];
+  var MENSAGEM_RESERVA = 'Olá! Vim pelo link e quero mais informações.';
+  var foi = false;
+
+  function ir(numero, mensagem){
+    if (foi) return; foi = true;
+    var url = 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensagem);
+    window.location.replace(url);
+    setTimeout(function(){
+      document.getElementById('msg').innerHTML =
+        'Se o WhatsApp não abriu, <a href="' + url + '">toque aqui</a>.';
+    }, 2500);
+  }
+
+  setTimeout(function(){
+    ir(RESERVA[Math.floor(Math.random()*RESERVA.length)], MENSAGEM_RESERVA);
+  }, 6000);
+
+  fetch(API, {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(d){ ir(d.numero, d.mensagem); })
+    .catch(function(){ ir(RESERVA[Math.floor(Math.random()*RESERVA.length)], MENSAGEM_RESERVA); });
+</script>
+</body>
+</html>
